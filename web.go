@@ -5,6 +5,6 @@ import (
 )
 
 func main () {
-	// http.ListenServe(アドレス, <<Handler>>)
-	http.ListenAndServe("", http.NotFoundHandler())	// 空文字指定でlocalhost NotFoundHandler -> 404 page not found
+	// http.FileServer( <<FileSystem>> )
+	http.ListenAndServe("", http.FileServer(http.Dir(".")))	// httpパッケージのDir関数
 }
