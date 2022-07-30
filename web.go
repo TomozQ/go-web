@@ -6,22 +6,72 @@ import (
 	"text/template"
 )
 
-func main () {
-	tf, er := template.ParseFiles("templates/hello.html")
-	// errorが発生して読み込めなかった場合には、stringリテラルを使ってテンプレートを生成する。
+// Temp is template structure
+type Temps struct {
+	notemp * template.Template
+	indx * template.Template
+	helo * template.Template
+}
+
+// Template for no-template
+func notemp() *template.Template {
+	src := "<html><body><h1>NO TEMPLATE.</h1></body></html>"
+	tmp, _ := template.New("index").Parse(src)
+	return tmp
+}
+
+// setup template function.
+func setupTemp () *Temps {
+	temps := new (Temps)
+
+	temps.notemp = notemp()
+
+	// set index template
+	indx, er := template.ParseFiles("templates/index.html")
 	if er != nil {
-		tf, _ = template.New("index").Parse("<html><body><h1>NO TEMPLATE.</h1></body></html>")
+		indx = temps.notemp
 	}
-
-	hh := func(w http.ResponseWriter, rq *http.Request) {
-		// <<template>>.Excuteでテンプレートをレンダリング出力
-		er = tf.Execute(w, nil)
-		if er != nil {
-			log.Fatal(er)
-		}
+	temps.indx = indx
+	
+	// set hello template
+	helo, er := template.ParseFiles("templates/hello.html")
+	if er != nil {
+		helo = temps.notemp
 	}
+	temps.helo = helo
 
-	http.Handle("/hello", http.HandlerFunc(hh))
+	return temps
+}
+
+// index handler.
+func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
+	er := tmp.Execute(w, nil)
+	if er != nil {
+		log.Fatal(er)
+	}
+}
+
+// hello handler.
+func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
+	er := tmp.Execute(w, nil)
+	if er != nil {
+		log.Fatal(er)
+	}
+}
+
+
+func main () {
+	temps := setupTemp()
+
+	// index handling
+	http.HandleFunc("/", func(w http.ResponseWriter, rq *http.Request){
+		index(w, rq, temps.indx)
+	})
+
+	// helo handling
+	http.HandleFunc("/hello", func(w http.ResponseWriter, rq *http.Request){
+		hello(w, rq, temps.helo)
+	})
 
 	http.ListenAndServe("", nil)
 }
