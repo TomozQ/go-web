@@ -7,18 +7,10 @@ import (
 )
 
 func main () {
-	html := `
-		<html><body>
-		<h1>HELLO</h1>
-		<p>This is sample message.</p>
-		</body></html>
-	`
-
-	// Newでテンプレートを作成、Parseでhtmlの内容をパースしたTemplateを作成
-	tf, er := template.New("index").Parse(html)
+	tf, er := template.ParseFiles("templates/hello.html")
+	// errorが発生して読み込めなかった場合には、stringリテラルを使ってテンプレートを生成する。
 	if er != nil {
-		// Fatal → ログとして値を出力するのに使用される関数エラー時にエラー内容がターミナルに出力される。
-		log.Fatal(er)
+		tf, _ = template.New("index").Parse("<html><body><h1>NO TEMPLATE.</h1></body></html>")
 	}
 
 	hh := func(w http.ResponseWriter, rq *http.Request) {
