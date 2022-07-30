@@ -56,11 +56,10 @@ var flg bool = true
 func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 	item := struct {
 		Title string
-		Items []string
-		JMessage string
+		Message string
 	}{
 		Title: "Send values",
-		Items: []string{"One", "Two", "Three"},
+		// Message: "Yes! this is message!!",
 	}
 
 	er := tmp.Execute(w, item)
