@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HELLO</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+</head>
+<body class="container">
+  <h1 class="display-4 mb-4">{{.Title}}</h1>
+  {{ with .Message }}
+  <p>OK, message is here!</p>
+  {{ else }}
+  <p>no message ...</p>
+  {{ end }}
+</body>
+</html>
