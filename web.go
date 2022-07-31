@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"github.com/gorilla/sessions"
 )
 
 // Temp is template structure
@@ -51,22 +52,41 @@ func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 	}
 }
 
-var flg bool = true
+// CookieStoreを作成
+var cs *sessions.CookieStore = sessions.NewCookieStore([]byte("secret-key-12345"))	// ([]byte("secret-key-12345")) → セッションの秘密キー
 // hello handler.
 func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
-	msg := "type name and password: "
+	msg := "login name & password: "
+
+	// セッションを取得
+	ses, _ := cs.Get(rq, "hello-session")
 
 	if rq.Method == "POST" {
+		ses.Values["login"] = nil
+		ses.Values["name"] = nil
 		nm := rq.PostFormValue("name")
 		pw := rq.PostFormValue("pass")
-		msg = "name: " + nm + ", password: " + pw
+		
+		if nm == pw {
+			ses.Values["login"] = true
+			ses.Values["name"] = nm
+		}
+
+		ses.Save(rq, w)
+	}
+
+	flg, _ := ses.Values["login"].(bool)
+	lname, _ := ses.Values["name"].(string)
+
+	if flg {
+		msg = "logined: " + lname
 	}
 
 	item := struct {
 		Title string
 		Message string
 	}{
-		Title: "Send values",
+		Title: "Session",
 		Message: msg,
 	}
 
@@ -74,7 +94,6 @@ func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 	if er != nil {
 		log.Fatal(er)
 	}
-	flg = !flg
 }
 
 
