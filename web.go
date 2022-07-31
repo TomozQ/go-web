@@ -54,12 +54,16 @@ func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 var flg bool = true
 // hello handler.
 func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
+	id := rq.FormValue("id")
+	nm := rq.FormValue("name")
+	msg := "id: " + id + ", Name: " + nm
+
 	item := struct {
 		Title string
 		Message string
 	}{
 		Title: "Send values",
-		// Message: "Yes! this is message!!",
+		Message: msg,
 	}
 
 	er := tmp.Execute(w, item)
