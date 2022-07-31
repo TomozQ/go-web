@@ -54,9 +54,13 @@ func index(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
 var flg bool = true
 // hello handler.
 func hello(w http.ResponseWriter, rq *http.Request, tmp *template.Template) {
-	id := rq.FormValue("id")
-	nm := rq.FormValue("name")
-	msg := "id: " + id + ", Name: " + nm
+	msg := "type name and password: "
+
+	if rq.Method == "POST" {
+		nm := rq.PostFormValue("name")
+		pw := rq.PostFormValue("pass")
+		msg = "name: " + nm + ", password: " + pw
+	}
 
 	item := struct {
 		Title string
